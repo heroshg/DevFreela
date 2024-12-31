@@ -163,7 +163,10 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("DevFreela.Core.Entities.UserSkill", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -180,6 +183,8 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdSkill");
+
+                    b.HasIndex("IdUser");
 
                     b.ToTable("UserSkills");
                 });
@@ -224,15 +229,15 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("DevFreela.Core.Entities.UserSkill", b =>
                 {
-                    b.HasOne("DevFreela.Core.Entities.User", "User")
-                        .WithMany("Skills")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("DevFreela.Core.Entities.Skill", "Skill")
                         .WithMany("UserSkills")
                         .HasForeignKey("IdSkill")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DevFreela.Core.Entities.User", "User")
+                        .WithMany("Skills")
+                        .HasForeignKey("IdUser")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

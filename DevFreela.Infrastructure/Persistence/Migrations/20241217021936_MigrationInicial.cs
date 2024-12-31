@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DevFreela.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimeiraMigration : Migration
+    public partial class MigrationInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -82,7 +82,8 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "UserSkills",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     IdUser = table.Column<int>(type: "int", nullable: false),
                     IdSkill = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -98,8 +99,8 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserSkills_Users_Id",
-                        column: x => x.Id,
+                        name: "FK_UserSkills_Users_IdUser",
+                        column: x => x.IdUser,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -114,7 +115,6 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IdProject = table.Column<int>(type: "int", nullable: false),
                     IdUser = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -128,11 +128,11 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjectComments_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_ProjectComments_Users_IdUser",
+                        column: x => x.IdUser,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -141,9 +141,9 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 column: "IdProject");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectComments_UserId",
+                name: "IX_ProjectComments_IdUser",
                 table: "ProjectComments",
-                column: "UserId");
+                column: "IdUser");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_IdClient",
@@ -159,6 +159,11 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                 name: "IX_UserSkills_IdSkill",
                 table: "UserSkills",
                 column: "IdSkill");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSkills_IdUser",
+                table: "UserSkills",
+                column: "IdUser");
         }
 
         /// <inheritdoc />
