@@ -1,8 +1,9 @@
-﻿using DevFreela.Application.Models;
-using DevFreela.Core.Entities;
-using DevFreela.Infrastructure.Persistence;
+﻿using DevFreela.Application.Commands.InsertUser;
+using DevFreela.Application.Commands.InsertUserSkills;
+using DevFreela.Application.Queries.GetUserById;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DevFreela.API.Controllers
 {
@@ -10,50 +11,46 @@ namespace DevFreela.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly DevFreelaDbContext _context;
-        public UsersController(DevFreelaDbContext context)
+        private readonly IMediator _mediator;
+        public UsersController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var user = _context.Users
-                .Include(u => u.Skills)
-                .ThenInclude(u => u.Skill)
-                .SingleOrDefault(u => u.Id == id);
 
-            if (user is null)
+            var result = await _mediator.Send(new GetUserByIdQuery(id));
+
+            if (!result.IsSuccess)
             {
-                return NotFound();
+                return BadRequest(result.Message);
             }
 
-            var model = UserViewModel.FromEntity(user);
-            return Ok();
+            return Ok(result);
         }
 
         // POST api/users
         [HttpPost]
-        public IActionResult Post(CreateUserInputModel model)
+        public async Task<IActionResult> Post(InsertUserCommand model)
         {
-            var user = new User(model.FullName, model.Email, model.BirthDate);
+            var result = await _mediator.Send(model);
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
-
-            return Ok();
+            return CreatedAtAction(nameof(GetById), new { id = result.Data }, model);
         }
 
         [HttpPost("{id}/skills")]
-        public IActionResult PostSkills(int id, UserSkillsInputModel model)
+        public async Task<IActionResult> PostSkills(int id, InsertUserSkillCommand model)
         {
-            var userSkills = model.SkillsIds.Select(s => new UserSkill(id, s)).ToList();
+            var result = await _mediator.Send(model);
 
-            _context.UserSkills.AddRange(userSkills);
-            _context.SaveChanges();
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
 
-            return NoContent();
+            return CreatedAtAction(nameof(GetById), new { id = id }, model);
         }
 
         [HttpPost("{id}/profile-picture")]
