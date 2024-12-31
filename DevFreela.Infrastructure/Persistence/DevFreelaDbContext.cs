@@ -30,13 +30,13 @@ namespace DevFreela.Infrastructure.Persistence
                     e.HasKey(us => us.Id);
 
                     e.HasOne(u => u.Skill)
-                    .WithMany(u => u.UserSkills)
-                    .HasForeignKey(s => s.IdSkill)
-                    .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany(u => u.UserSkills)
+                        .HasForeignKey(s => s.IdSkill)
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             builder
-                .Entity<ProjectComment>( e =>
+                .Entity<ProjectComment>(e =>
                 {
                     e.HasKey(p => p.Id);
 
@@ -54,11 +54,11 @@ namespace DevFreela.Infrastructure.Persistence
             builder
                 .Entity<User>(e =>
                 {
-                    e.HasKey(p => p.Id);
+                    e.HasKey(u => u.Id);
 
                     e.HasMany(u => u.Skills)
                         .WithOne(us => us.User)
-                        .HasForeignKey(us => us.Id)
+                        .HasForeignKey(us => us.IdUser)
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
