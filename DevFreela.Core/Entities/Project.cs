@@ -4,7 +4,11 @@ namespace DevFreela.Core.Entities
 {
     public class Project: BaseEntity
     {
+        
+        public const string INVALID_STATE_MESSAGE = "Project is in invalid state.";
+
         protected Project() { }
+
         public Project(string title, string description, int idClient, int idFreelancer, decimal totalCost) : base()
         {
             Title = title;
@@ -39,28 +43,32 @@ namespace DevFreela.Core.Entities
 
         public void Start()
         {
-            if (Status == ProjectStatusEnum.Created )
+            if (Status != ProjectStatusEnum.Created )
             {
-                Status = ProjectStatusEnum.InProgress;
-                StartedAt = DateTime.Now;
+                throw new InvalidOperationException(INVALID_STATE_MESSAGE);
             }
+            Status = ProjectStatusEnum.InProgress;
+            StartedAt = DateTime.Now;
         }
 
         public void Complete()
         {
-            if (Status == ProjectStatusEnum.PaymentPending || Status == ProjectStatusEnum.InProgress)
+            if (Status != ProjectStatusEnum.PaymentPending && Status != ProjectStatusEnum.InProgress)
             {
-                Status = ProjectStatusEnum.Completed;
-                CompletedAt = DateTime.Now;
+                throw new InvalidOperationException(INVALID_STATE_MESSAGE);
             }
+
+            Status = ProjectStatusEnum.Completed;
+            CompletedAt = DateTime.Now;
         }
 
         public void SetPaymentPending()
         {
-            if (Status == ProjectStatusEnum.InProgress )
+            if (Status != ProjectStatusEnum.InProgress )
             {
-                Status = ProjectStatusEnum.PaymentPending;
+                throw new InvalidOperationException(INVALID_STATE_MESSAGE);
             }
+            Status = ProjectStatusEnum.PaymentPending;
         }
 
         public void Update(string title, string description, decimal totalCost)

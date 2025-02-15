@@ -6,6 +6,7 @@ namespace DevFreela.Application.Commands.UpdateProject
 {
     public class UpdateProjectHandler : IRequestHandler<UpdateProjectCommand, ResultViewModel>
     {
+        public const string PROJECT_NOT_FOUND_MESSAGE = "O Projeto não existe";
         private readonly IProjectRepository _repository;
         public UpdateProjectHandler(IProjectRepository repository)
         {
