@@ -1,5 +1,6 @@
 ﻿using DevFreela.Core.Entities;
 using DevFreela.Core.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence.Repositories
 {
@@ -17,6 +18,11 @@ namespace DevFreela.Infrastructure.Persistence.Repositories
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user.Id;
+        }
+
+        public async Task<User> GetUser(string email, string password)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.Email == email && u.Password == password);
         }
     }
 }
