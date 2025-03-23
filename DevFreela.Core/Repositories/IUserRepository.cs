@@ -6,5 +6,7 @@ namespace DevFreela.Core.Repositories
     {
         Task<int> Add(User user);
         Task<User> GetUser(string email, string password);
+        Task<User> GetUserByEmail(string email);
+        Task Update();
     }
 }

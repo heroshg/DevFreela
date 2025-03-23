@@ -23,7 +23,7 @@ namespace DevFreela.API.Controllers
 
         // GET api/projects?search=crm
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "user, admin")]
         public async Task<IActionResult> Get(string search = "", int page = 0, int size = 3)
         {
 

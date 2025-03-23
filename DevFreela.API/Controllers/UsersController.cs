@@ -1,16 +1,13 @@
-﻿using DevFreela.Application.Commands.InsertUser;
+﻿using DevFreela.Application.Commands.ChangePassword;
+using DevFreela.Application.Commands.InsertUser;
 using DevFreela.Application.Commands.InsertUserSkills;
 using DevFreela.Application.Commands.NewLogin;
-using DevFreela.Application.Models;
+using DevFreela.Application.Commands.RequestPasswordRecovery;
+using DevFreela.Application.Commands.ValidateRecoveryCode;
 using DevFreela.Application.Queries.GetUserById;
-using DevFreela.Application.Queries.GetUserLogin;
-using DevFreela.Application.Queries.Login;
-using DevFreela.Infrastructure.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DevFreela.API.Controllers
 {
@@ -20,11 +17,9 @@ namespace DevFreela.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IAuthService _authService;
-        public UsersController(IMediator mediator, IAuthService authService)
+        public UsersController(IMediator mediator)
         {
             _mediator = mediator;
-            _authService = authService;
         }
 
         [HttpGet("{id}")]
@@ -85,6 +80,46 @@ namespace DevFreela.API.Controllers
             // Processar a imagem
 
             return Ok(description);
+        }
+
+        [HttpPost("password-recovery/request")]
+        [AllowAnonymous]
+        public  async Task<IActionResult> RequestPasswordRecovery(RequestPasswordRecoveryCommand model)
+        {
+
+            var result = await _mediator.Send(model);
+            if(!result.IsSuccess)
+            {
+                return BadRequest();
+            }
+            return NoContent();
+        }
+
+        [HttpPost("password-recovery/validate")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ValidateRecoveryCode(ValidateRecoveryCodeCommand model)
+        {
+            var result = await _mediator.Send(model);
+            if(!result.IsSuccess)
+            {
+                return BadRequest();
+            }
+            return NoContent();
+        }
+
+        [HttpPost("password-recovery/change")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand model)
+        {
+
+            var result = await _mediator.Send(model);
+
+            if(!result.IsSuccess)
+            {
+                return BadRequest();
+            }
+
+            return NoContent();
         }
     }
 }

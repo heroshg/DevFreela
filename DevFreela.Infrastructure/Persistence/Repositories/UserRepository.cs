@@ -20,9 +20,19 @@ namespace DevFreela.Infrastructure.Persistence.Repositories
             return user.Id;
         }
 
+        public async Task Update()
+        {
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<User> GetUser(string email, string password)
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Email == email && u.Password == password);
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
         }
     }
 }
